@@ -153,21 +153,19 @@ public class RightTrinityAutonomous extends LinearOpMode {
                 Lift(DRIVE_SPEED, value);
                 gyroTurn(DRIVE_SPEED, 45);
                 gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 3, 45);
+                gyroDrive(DRIVE_SPEED, 2, 45);
                 gyroTurn(DRIVE_SPEED, 0);
                 gyroHold(DRIVE_SPEED, 0, 0.5);
-                gyroDrive(DRIVE_SPEED, 15, 0);
-                gyroDrive(DRIVE_SPEED, 10, 0);
-                gyroDrive(DRIVE_SPEED, -10, 0);
-                gyroTurn(DRIVE_SPEED, 90);
-                gyroHold(DRIVE_SPEED, 90, 0.5);
-                gyroDrive(DRIVE_SPEED, 54, 90);
-                gyroTurn(DRIVE_SPEED, 125);
-                gyroHold(DRIVE_SPEED, 125, 0.5);
-                gyroDrive(DRIVE_SPEED, 40, 125);
+                gyroDrive(DRIVE_SPEED, 28, 0);
+                gyroDrive(DRIVE_SPEED, -25, 0);
+                gyroTurn(DRIVE_SPEED, 50);
+                gyroDrive(DRIVE_SPEED, 43, 50);
+                gyroTurn(DRIVE_SPEED, 127);
+                gyroHold(DRIVE_SPEED, 127, 0.5);
+                gyroDrive(DRIVE_SPEED, 46, 127);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -75, 125);
+                gyroDrive(DRIVE_SPEED, -75, 127);
             }
 
             //Right
@@ -177,23 +175,19 @@ public class RightTrinityAutonomous extends LinearOpMode {
                 Lift(DRIVE_SPEED, value);
                 gyroTurn(DRIVE_SPEED, 45);
                 gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 3, 45);
-                gyroTurn(DRIVE_SPEED, -45);
-                gyroHold(DRIVE_SPEED, -45, 0.5);
-                gyroDrive(DRIVE_SPEED, 25, -45);
-                gyroTurn(DRIVE_SPEED, 0);
-                gyroHold(DRIVE_SPEED, 0, 0.5);
-                gyroDrive(DRIVE_SPEED, 8, 0);
-                gyroDrive(DRIVE_SPEED, -8, 0);
-                gyroTurn(DRIVE_SPEED, 90);
-                gyroHold(DRIVE_SPEED, 90, 0.5);
-                gyroDrive(DRIVE_SPEED, 73, 90);
-                gyroTurn(DRIVE_SPEED, 125);
-                gyroHold(DRIVE_SPEED, 125, 0.5);
-                gyroDrive(DRIVE_SPEED, 40, 125);
+                gyroDrive(DRIVE_SPEED, 2, 45);
+                gyroTurn(DRIVE_SPEED, -40);
+                gyroHold(DRIVE_SPEED, -40, 0.5);
+                gyroDrive(DRIVE_SPEED, 30, -40);
+                gyroDrive(DRIVE_SPEED, -30, -40);
+                gyroTurn(DRIVE_SPEED, 50);
+                gyroDrive(DRIVE_SPEED, 44, 50);
+                gyroTurn(DRIVE_SPEED, 127);
+                gyroHold(DRIVE_SPEED, 127, 0.5);
+                gyroDrive(DRIVE_SPEED, 46, 127);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -75, 125);
+                gyroDrive(DRIVE_SPEED, -75, 127);
             }
 
             //Left
@@ -203,23 +197,16 @@ public class RightTrinityAutonomous extends LinearOpMode {
                 Lift(DRIVE_SPEED,value);
                 gyroTurn(DRIVE_SPEED, 45);
                 gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 3, 45);
-                gyroTurn(DRIVE_SPEED, 45);
-                gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 20, 45);
-                gyroTurn(DRIVE_SPEED, 0);
-                gyroHold(DRIVE_SPEED, 0, 0.5);
-                gyroDrive(DRIVE_SPEED, 15, 0);
-                gyroDrive(DRIVE_SPEED, -15, 0);
-                gyroTurn(DRIVE_SPEED, 90);
-                gyroHold(DRIVE_SPEED, 90, 0.5);
-                gyroDrive(DRIVE_SPEED, 35, 90);
-                gyroTurn(DRIVE_SPEED, 125);
-                gyroHold(DRIVE_SPEED, 125, 0.5);
-                gyroDrive(DRIVE_SPEED, 40, 125);
+                gyroDrive(DRIVE_SPEED, 47, 50);
+                gyroTurn(DRIVE_SPEED, 127);
+                gyroHold(DRIVE_SPEED, 127, 0.5);
+                gyroDrive(DRIVE_SPEED, 45, 127);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -75, 125);
+                gyroDrive(DRIVE_SPEED, -45, 127);
+                gyroTurn(DRIVE_SPEED, 105);
+                gyroHold(DRIVE_SPEED, 105, 0.5);
+                gyroDrive(DRIVE_SPEED, -30, 95);
             }
 
             telemetry.addData("Path", "Complete");

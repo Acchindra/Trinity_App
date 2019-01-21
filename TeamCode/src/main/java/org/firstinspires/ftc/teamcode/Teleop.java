@@ -41,7 +41,7 @@ public class Teleop extends LinearOpMode
         rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
         leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
-//        leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
+        leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
 //        leftArmMotor = hardwareMap.dcMotor.get("leftArmMotor");
 //        rightArmMotor = hardwareMap.dcMotor.get("rightArmMotor");
         liftMotor = hardwareMap.dcMotor.get("liftMotor");
