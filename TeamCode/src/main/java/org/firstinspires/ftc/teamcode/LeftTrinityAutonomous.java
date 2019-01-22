@@ -40,6 +40,7 @@ public class LeftTrinityAutonomous extends LinearOpMode {
     public DcMotor leftMotorBack;
     public DcMotor liftMotor;
     public DcMotor armMotor;
+    public DcMotor lights;
     public Servo flickServo;
     public CRServo extendServo;
     public Servo liftpushServo;
@@ -56,6 +57,7 @@ public class LeftTrinityAutonomous extends LinearOpMode {
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
         armMotor = hardwareMap.dcMotor.get("armMotor");
         liftMotor = hardwareMap.dcMotor.get("liftMotor");
+        lights = hardwareMap.dcMotor.get("lights");
         flickServo = hardwareMap.servo.get("flickServo");
         extendServo = hardwareMap.crservo.get("extendServo");
         liftpushServo = hardwareMap.servo.get("liftpushServo");
@@ -124,6 +126,7 @@ public class LeftTrinityAutonomous extends LinearOpMode {
 
             //Center
             if (detector.getXPosition() > 180 && detector.getXPosition() < 420) {
+                lights.setPower(-0.5);
                 detector.disable();
                 Lift(DRIVE_SPEED, value);
                 gyroTurn(DRIVE_SPEED, 45);
@@ -141,6 +144,7 @@ public class LeftTrinityAutonomous extends LinearOpMode {
 
             //Right
             else if (detector.getXPosition() > 420){
+                lights.setPower(-0.5);
                 detector.disable();
                 Lift(DRIVE_SPEED, value);
                 gyroTurn(DRIVE_SPEED, 45);
@@ -161,6 +165,7 @@ public class LeftTrinityAutonomous extends LinearOpMode {
 
             //Left
             else if (detector.getXPosition() < 180) {
+                lights.setPower(-0.5);
                 detector.disable();
                 Lift(DRIVE_SPEED, value);
                 gyroTurn(DRIVE_SPEED, 45);

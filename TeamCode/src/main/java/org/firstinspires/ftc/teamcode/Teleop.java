@@ -23,6 +23,7 @@ public class Teleop extends LinearOpMode
 //    public DcMotor rightArmMotor;
     public DcMotor liftMotor;
     public DcMotor armMotor;
+    public DcMotor lights;
 
     //Servo Count -- 7 / 12
 //    public CRServo sweepServo;
@@ -42,6 +43,7 @@ public class Teleop extends LinearOpMode
         leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
+        lights = hardwareMap.dcMotor.get("lights");
 //        leftArmMotor = hardwareMap.dcMotor.get("leftArmMotor");
 //        rightArmMotor = hardwareMap.dcMotor.get("rightArmMotor");
         liftMotor = hardwareMap.dcMotor.get("liftMotor");
@@ -71,12 +73,14 @@ public class Teleop extends LinearOpMode
             double rotate;  // Power for rotating the robot
             double lift;
             double arm;
+            double light;
 
             //Gamepad 1 Portion
             //-------------------------------------------------------------------------
             drive = -gamepad1.left_stick_y;  // Negative because the gamepad is weird
             strafe = -gamepad1.left_stick_x;
             rotate = -gamepad1.right_stick_x;
+
 
             //Set the values for the drive to be only -1 <-> 1
             drive = Range.clip(drive, -1, 1);
@@ -94,6 +98,8 @@ public class Teleop extends LinearOpMode
                 strafe /= 3;
                 rotate /= 3;
             }
+
+            lights.setPower(-0.5);
 
             if (gamepad1.x)
             {
