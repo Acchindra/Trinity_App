@@ -51,7 +51,7 @@ public class RightTrinityAutonomous extends LinearOpMode {
     final double HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     final double P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     final double P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
-    final int value = 19500;
+    final int value = 7250;
 
 
 
@@ -162,7 +162,7 @@ public class RightTrinityAutonomous extends LinearOpMode {
                 gyroDrive(DRIVE_SPEED, 28, 0);
                 gyroDrive(DRIVE_SPEED, -25, 0);
                 gyroTurn(DRIVE_SPEED, 50);
-                gyroDrive(DRIVE_SPEED, 43, 50);
+                gyroDrive(DRIVE_SPEED, 45, 50);
                 gyroTurn(DRIVE_SPEED, 127);
                 gyroHold(DRIVE_SPEED, 127, 0.5);
                 gyroDrive(DRIVE_SPEED, 46, 127);
@@ -211,7 +211,7 @@ public class RightTrinityAutonomous extends LinearOpMode {
                 gyroDrive(DRIVE_SPEED, -45, 127);
                 gyroTurn(DRIVE_SPEED, 105);
                 gyroHold(DRIVE_SPEED, 105, 0.5);
-                gyroDrive(DRIVE_SPEED, -30, 95);
+                gyroDrive(DRIVE_SPEED, -30, 87);
             }
 
             telemetry.addData("Path", "Complete");
