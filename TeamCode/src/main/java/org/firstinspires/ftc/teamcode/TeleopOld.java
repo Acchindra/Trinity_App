@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.Range;
  * Created by Manjesh on 12/4/2018.
  */
 
-@TeleOp(name = "Trinity Competition Tele-Op")
+//@TeleOp(name = "Trinity Competition Tele-Op")
 public class TeleopOld extends LinearOpMode
 {
     //Motor Count -- 7 / 8
