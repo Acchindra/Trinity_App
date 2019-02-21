@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
  * Created by Manjesh on 12/4/2018.
  */
 
-@TeleOp(name = "Trinity Tele-Op")
+@TeleOp(name = "Terry Wang Flex Tele-Op")
 public class TeleopNew extends LinearOpMode
 {
     //Motor Count -- 7 / 8
@@ -61,6 +61,8 @@ public class TeleopNew extends LinearOpMode
             double GoUPandDOWN;
             double arm_out;
             double arm_up;
+
+            depositServo.setPosition(Servo.MAX_POSITION);
 
             //Gamepad 1 Portion
             //-------------------------------------------------------------------------

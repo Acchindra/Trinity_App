@@ -38,20 +38,21 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 /**
  * Created by Manjesh on 12/4/2018.
  */
-@Autonomous(name="Right Side Trinity Competition Autonomous",group = "British Columbia Competition")
+@Autonomous(name="Terry Wang Flex Crater",group = "British Columbia Competition")
 public class RightTrinityAutonomous extends LinearOpMode {
 
     //Declare all variables
     final float CIRCUMFERENCE = (float)(3.93701 * Math.PI);
-    final int ENCODERTICKS = 1680;
-    final double GEARRATIO = 0.67;
+    final int ENCODERTICKS = 723;
+    final double GEARRATIO = 0.34;
     final double COUNTS_PER_INCH = (ENCODERTICKS * GEARRATIO) / (CIRCUMFERENCE);
-    final double DRIVE_SPEED             = 1.0;     // Nominal speed for better accuracy.
-    final double TURN_SPEED              = 0.5;     // Nominal half speed for better accuracy.
+    final double STRAFE_SPEED = 0.4;
+    final double DRIVE_SPEED             = 1;     // Nominal speed for better accuracy.
+    final double TURN_SPEED              = 0.5;
     final double HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     final double P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     final double P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
-    final int value = 7250;
+    final int value = 7600;
 
 
 
@@ -61,12 +62,7 @@ public class RightTrinityAutonomous extends LinearOpMode {
     public DcMotor rightMotorBack;
     public DcMotor leftMotorBack;
     public DcMotor liftMotor;
-    public DcMotor armMotor;
-    public DcMotor lights;
-    public Servo flickServo;
-    public CRServo extendServo;
-    public Servo liftpushServo;
-    public Servo collectServo;
+    public Servo flickServo;;
     public ModernRoboticsI2cGyro gyro;
     private GoldAlignDetector detector;
 
@@ -77,19 +73,13 @@ public class RightTrinityAutonomous extends LinearOpMode {
         leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
-        armMotor = hardwareMap.dcMotor.get("armMotor");
-        liftMotor = hardwareMap.dcMotor.get("liftMotor");
-        lights = hardwareMap.dcMotor.get("lights");
-        flickServo = hardwareMap.servo.get("flickServo");
-        extendServo = hardwareMap.crservo.get("extendServo");
-        liftpushServo = hardwareMap.servo.get("liftpushServo");
-        collectServo = hardwareMap.servo.get("collectServo");
+        liftMotor = hardwareMap.dcMotor.get("linearactuatorMotor");
+        flickServo = hardwareMap.servo.get("depositServo");
         leftMotorBack.setDirection(DcMotor.Direction.REVERSE);
         leftMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorFront.setDirection(DcMotor.Direction.FORWARD);
         rightMotorBack.setDirection(DcMotor.Direction.FORWARD);
-        liftMotor.setDirection(DcMotor.Direction.REVERSE);
-        armMotor.setDirection(DcMotor.Direction.REVERSE);
+        liftMotor.setDirection(DcMotor.Direction.FORWARD);
         gyro = (ModernRoboticsI2cGyro) hardwareMap.get("gyro");
 
         // Send telemetry message to alert driver that we are calibrating;
@@ -151,67 +141,66 @@ public class RightTrinityAutonomous extends LinearOpMode {
             //Center
             if (detector.getXPosition() > 180 && detector.getXPosition() < 420)
             {
-                lights.setPower(-0.5);
                 detector.disable();
+                StopDriving();
                 Lift(DRIVE_SPEED, value);
-                gyroTurn(DRIVE_SPEED, 45);
-                gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 2, 45);
-                gyroTurn(DRIVE_SPEED, 0);
-                gyroHold(DRIVE_SPEED, 0, 0.5);
-                gyroDrive(DRIVE_SPEED, 28, 0);
-                gyroDrive(DRIVE_SPEED, -25, 0);
-                gyroTurn(DRIVE_SPEED, 50);
-                gyroDrive(DRIVE_SPEED, 45, 50);
-                gyroTurn(DRIVE_SPEED, 127);
-                gyroHold(DRIVE_SPEED, 127, 0.5);
-                gyroDrive(DRIVE_SPEED, 46, 127);
+                gyroTurn(TURN_SPEED,0);
+                gyroHold(TURN_SPEED,0,0.5);
+                gyroDrive(DRIVE_SPEED, 15, 0);
+                gyroTurn(TURN_SPEED, 90);
+                gyroHold(TURN_SPEED, 90, 0.5);
+                gyroDrive(DRIVE_SPEED, 110, 90);
+                gyroDrive(DRIVE_SPEED, -100, 90);
+                gyroTurn(TURN_SPEED, 140);
+                gyroDrive(DRIVE_SPEED, 197, 140);
+                gyroTurn(TURN_SPEED, 215);
+                gyroHold(TURN_SPEED, 215, 0.5);
+                gyroDrive(DRIVE_SPEED, 180, 215);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -75, 127);
+                gyroDrive(DRIVE_SPEED, -300, 217);
             }
 
             //Right
             else if (detector.getXPosition() > 420)
             {
-                lights.setPower(-0.5);
                 detector.disable();
+                StopDriving();
                 Lift(DRIVE_SPEED, value);
-                gyroTurn(DRIVE_SPEED, 45);
-                gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 2, 45);
-                gyroTurn(DRIVE_SPEED, -40);
-                gyroHold(DRIVE_SPEED, -40, 0.5);
-                gyroDrive(DRIVE_SPEED, 30, -40);
-                gyroDrive(DRIVE_SPEED, -30, -40);
+                gyroTurn(TURN_SPEED,0);
+                gyroHold(TURN_SPEED,0,0.5);
+                gyroDrive(DRIVE_SPEED, 15, 0);
                 gyroTurn(DRIVE_SPEED, 50);
-                gyroDrive(DRIVE_SPEED, 44, 50);
-                gyroTurn(DRIVE_SPEED, 127);
-                gyroHold(DRIVE_SPEED, 127, 0.5);
-                gyroDrive(DRIVE_SPEED, 46, 127);
+                gyroHold(DRIVE_SPEED, 50, 0.5);
+                gyroDrive(DRIVE_SPEED, 118, 50);
+                gyroDrive(DRIVE_SPEED, -118, 50);
+                gyroTurn(DRIVE_SPEED, 132);
+                gyroDrive(DRIVE_SPEED, 205, 132);
+                gyroTurn(DRIVE_SPEED, 208);
+                gyroHold(DRIVE_SPEED, 208, 0.5);
+                gyroDrive(DRIVE_SPEED, 197, 208);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -75, 127);
+                gyroDrive(DRIVE_SPEED, -312, 215);
             }
 
             //Left
             else if (detector.getXPosition() < 180)
             {
-                lights.setPower(-0.5);
                 detector.disable();
-                Lift(DRIVE_SPEED,value);
-                gyroTurn(DRIVE_SPEED, 45);
-                gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 47, 50);
-                gyroTurn(DRIVE_SPEED, 127);
-                gyroHold(DRIVE_SPEED, 127, 0.5);
-                gyroDrive(DRIVE_SPEED, 45, 127);
+                StopDriving();
+                Lift(DRIVE_SPEED, value);
+                gyroTurn(TURN_SPEED,0);
+                gyroHold(TURN_SPEED,0,0.5);
+                gyroDrive(DRIVE_SPEED, 15, 0);
+                gyroTurn(DRIVE_SPEED, 128);
+                gyroDrive(DRIVE_SPEED, 200, 128);
+                gyroTurn(DRIVE_SPEED, 208);
+                gyroHold(DRIVE_SPEED, 208, 0.5);
+                gyroDrive(DRIVE_SPEED, 210, 208);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -45, 127);
-                gyroTurn(DRIVE_SPEED, 105);
-                gyroHold(DRIVE_SPEED, 105, 0.5);
-                gyroDrive(DRIVE_SPEED, -30, 87);
+                gyroDrive(DRIVE_SPEED, -310, 203);
             }
 
             telemetry.addData("Path", "Complete");
@@ -295,7 +284,6 @@ public class RightTrinityAutonomous extends LinearOpMode {
             leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
-            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
             rightMotorFront.setPower(speed);
             rightMotorBack.setPower(speed);
             leftMotorFront.setPower(speed);
@@ -324,10 +312,10 @@ public class RightTrinityAutonomous extends LinearOpMode {
                     rightSpeed /= max;
                 }
 
-                leftMotorFront.setPower(leftSpeed);
-                leftMotorBack.setPower(leftSpeed);
-                rightMotorFront.setPower(rightSpeed);
-                rightMotorBack.setPower(rightSpeed);
+                leftMotorFront.setPower(leftSpeed/2);
+                leftMotorBack.setPower(leftSpeed/2);
+                rightMotorFront.setPower(rightSpeed/2);
+                rightMotorBack.setPower(rightSpeed/2);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);
