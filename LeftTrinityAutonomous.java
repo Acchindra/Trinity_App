@@ -15,17 +15,17 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by Manjesh on 12/4/2018.
  */
-@Autonomous(name="Terry Wang Flex Depot",group = "British Columbia Competition")
+@Autonomous(name="Terry Wang Flex Left",group = "British Columbia Competition")
 public class LeftTrinityAutonomous extends LinearOpMode {
 
     //Declare all variables
     final float CIRCUMFERENCE = (float)(3.93701 * Math.PI);
     final int ENCODERTICKS = 723;
-    final double GEARRATIO = 0.34;
+    final double GEARRATIO = 0.67;
     final double COUNTS_PER_INCH = (ENCODERTICKS * GEARRATIO) / (CIRCUMFERENCE);
-    final double STRAFE_SPEED = 0.4;
-    final double DRIVE_SPEED             = 1;     // Nominal speed for better accuracy.
-    final double TURN_SPEED              = 0.5;
+    final double STRAFE_SPEED = 0.5;
+    final double DRIVE_SPEED             = 0.5;     // Nominal speed for better accuracy.
+    final double TURN_SPEED              = 0.25;
     final double HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     final double P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     final double P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
@@ -114,37 +114,35 @@ public class LeftTrinityAutonomous extends LinearOpMode {
             //Center
             if (detector.getXPosition() > 180 && detector.getXPosition() < 420) {
 
-                /*detector.disable();
+              /*  detector.disable();
                 StopDriving();
                 Lift(1.0, value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
                 gyroDrive(DRIVE_SPEED, 4.5, 0);
-                strafe(STRAFE_SPEED, .6, 165);
+                gyroHold(TURN_SPEED,0,0.5);
+                gyroTurn(TURN_SPEED, 0);
+                strafe(STRAFE_SPEED, 1.25, 190);
                 sleep(1000);
                 gyroTurn(TURN_SPEED, 45);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -30, 45);
-*/
+                gyroDrive(DRIVE_SPEED, -70, 45);*/
 
 
                 //Tank Drive (Single Sampling)
 
                 detector.disable();
                 StopDriving();
-                Lift(DRIVE_SPEED, value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 15, 0);
+                Lift(1.0, value);
+                gyroDrive(DRIVE_SPEED, 4.5, 0);
+                gyroHold(TURN_SPEED,0,1);
                 gyroTurn(TURN_SPEED, 90);
-                gyroHold(TURN_SPEED,90,1);
-                gyroDrive(DRIVE_SPEED, 250, 90 );
+                gyroHold(DRIVE_SPEED, 90, 1);
+                gyroDrive(DRIVE_SPEED, 60, 90);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroTurn(TURN_SPEED, 40);
-                gyroHold(TURN_SPEED, 40, 1);
-                gyroDrive(DRIVE_SPEED, -300, 41);
+                gyroTurn(DRIVE_SPEED, 45);
+                gyroHold(DRIVE_SPEED, 45, 0.5);
+                gyroDrive(DRIVE_SPEED, -73, 45);
 
                 //Mechanum Drive (Double Sampling)
 
@@ -166,76 +164,40 @@ public class LeftTrinityAutonomous extends LinearOpMode {
 
             //Right
             else if (detector.getXPosition() > 420){
-
-                /*detector.disable();
-                StopDriving();
-                Lift(1.0, value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 4.5, 0);
-                strafe(STRAFE_SPEED, .05, 180);
-                gyroDrive(-DRIVE_SPEED, 4, 0);
-                strafe(STRAFE_SPEED, .5, 135);
-                gyroTurn(TURN_SPEED, 40);
-                gyroHold(TURN_SPEED,0,0.5);
-                strafe(STRAFE_SPEED, .5, 180);
-                flickServo.setPosition(Servo.MIN_POSITION);
-                sleep(1000);
-                strafe(STRAFE_SPEED, 1, 270);
-*/
                 detector.disable();
-                StopDriving();
                 Lift(DRIVE_SPEED, value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 15, 0);
-                gyroTurn(TURN_SPEED, 55);
-                gyroHold(TURN_SPEED, 55, 0.5);
-                gyroDrive(DRIVE_SPEED, 185, 55);
-                gyroTurn(TURN_SPEED, 125);
-                gyroHold(TURN_SPEED, 125, 0.5);
-                gyroDrive(DRIVE_SPEED, 170, 120);
-                gyroTurn(TURN_SPEED,45);
-                gyroHold(TURN_SPEED,45,0.5);
+                gyroTurn(DRIVE_SPEED, 45);
+                gyroHold(DRIVE_SPEED, 45, 0.5);
+                gyroDrive(DRIVE_SPEED, 2, 45);
+                gyroTurn(DRIVE_SPEED, -35);
+                gyroHold(DRIVE_SPEED, -35, 0.5);
+                gyroDrive(DRIVE_SPEED, 40, -35);
+                gyroTurn(DRIVE_SPEED, 45);
+                gyroHold(DRIVE_SPEED, 45, 0.5);
+                gyroDrive(DRIVE_SPEED, 40, 45);
+                gyroTurn(DRIVE_SPEED,-45);
+                gyroHold(DRIVE_SPEED,-45,0.5);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -312, 41);
+                gyroDrive(DRIVE_SPEED, -73, -45);
             }
 
             //Left
             else if (detector.getXPosition() < 180) {
-
-                /*detector.disable();
-                StopDriving();
-                Lift(1.0, value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 4.5, 0);
-                strafe(STRAFE_SPEED, .05, 180);
-                gyroDrive(-DRIVE_SPEED, 4, 0);
-                strafe(STRAFE_SPEED, .5, 240);
-                gyroTurn(TURN_SPEED, 40);
-                gyroHold(TURN_SPEED,0,0.5);
-                strafe(STRAFE_SPEED, .2, 90);
-                flickServo.setPosition(Servo.MIN_POSITION);
-                sleep(1000);
-                strafe(STRAFE_SPEED, 1, 270);*/
-
                 detector.disable();
-                StopDriving();
                 Lift(DRIVE_SPEED, value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 15, 0);
-                gyroTurn(TURN_SPEED, 115);
-                gyroHold(TURN_SPEED, 115, 0.5);
-                gyroDrive(DRIVE_SPEED, 188, 115);
-                gyroTurn(TURN_SPEED, 50);
-                gyroHold(TURN_SPEED, 50, 0.5);
-                gyroDrive(DRIVE_SPEED, 150, 50);
+                gyroTurn(DRIVE_SPEED, 45);
+                gyroHold(DRIVE_SPEED, 45, 0.5);
+                gyroDrive(DRIVE_SPEED, 2, 45);
+                gyroTurn(DRIVE_SPEED, 25);
+                gyroHold(DRIVE_SPEED, 25, 0.5);
+                gyroDrive(DRIVE_SPEED, 46, 25);
+                gyroTurn(DRIVE_SPEED, -45);
+                gyroHold(DRIVE_SPEED, -45, 0.5);
+                gyroDrive(DRIVE_SPEED, 35, -45);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -340, 41);
+                gyroDrive(DRIVE_SPEED, -80, -45);
             }
 
             telemetry.addData("Path", "Complete");
@@ -383,6 +345,7 @@ public class LeftTrinityAutonomous extends LinearOpMode {
             leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
+            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
             rightMotorFront.setPower(speed);
             rightMotorBack.setPower(speed);
             leftMotorFront.setPower(speed);
@@ -411,10 +374,10 @@ public class LeftTrinityAutonomous extends LinearOpMode {
                     rightSpeed /= max;
                 }
 
-                leftMotorFront.setPower(leftSpeed/2);
-                leftMotorBack.setPower(leftSpeed/2);
-                rightMotorFront.setPower(rightSpeed/2);
-                rightMotorBack.setPower(rightSpeed/2);
+                leftMotorFront.setPower(leftSpeed);
+                leftMotorBack.setPower(leftSpeed);
+                rightMotorFront.setPower(rightSpeed);
+                rightMotorBack.setPower(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);

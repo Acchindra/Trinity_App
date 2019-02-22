@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -29,15 +30,15 @@ public class LiftAutonomousTest extends LinearOpMode {
     final double HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     final double P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     final double P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
-    final int value = 7250;
+    final int value = 90000;
 
     public DcMotor liftMotor;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-        liftMotor = hardwareMap.dcMotor.get("liftMotor");
-        liftMotor.setDirection(DcMotor.Direction.REVERSE);
+        liftMotor = hardwareMap.dcMotor.get("linearactuatorMotor");
+        liftMotor.setDirection(DcMotor.Direction.FORWARD);
 
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 

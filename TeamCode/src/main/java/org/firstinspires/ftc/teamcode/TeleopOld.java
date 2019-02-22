@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode;
 
 import  com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,14 +8,21 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+*/
 /**
  * Created by Manjesh on 12/4/2018.
- */
+ *//*
+
 
 //@TeleOp(name = "Trinity Competition Tele-Op")
+*/
+/*
 public class TeleopOld extends LinearOpMode
 {
-    //Motor Count -- 7 / 8
+   *//*
+
+*/
+/* //Motor Count -- 7 / 8
     public DcMotor rightMotorFront;
     public DcMotor leftMotorFront;
     public DcMotor rightMotorBack;
@@ -203,5 +211,8 @@ public class TeleopOld extends LinearOpMode
             dScale = scaleArray[index];
         }
         return dScale;
-    }
-}
+    }*//*
+*/
+/*
+
+}*/
