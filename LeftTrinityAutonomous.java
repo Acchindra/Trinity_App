@@ -15,20 +15,19 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by Manjesh on 12/4/2018.
  */
-@Autonomous(name="Terry Wang Flex Left",group = "British Columbia Competition")
+@Autonomous(name="Terry Wang Flex Depot",group = "British Columbia Competition")
 public class LeftTrinityAutonomous extends LinearOpMode {
 
     //Declare all variables
     final float CIRCUMFERENCE = (float)(3.93701 * Math.PI);
-    final int ENCODERTICKS = 723;
+    final int ENCODERTICKS = 1680;
     final double GEARRATIO = 0.67;
     final double COUNTS_PER_INCH = (ENCODERTICKS * GEARRATIO) / (CIRCUMFERENCE);
-    final double STRAFE_SPEED = 0.5;
-    final double DRIVE_SPEED             = 0.5;     // Nominal speed for better accuracy.
-    final double TURN_SPEED              = 0.25;
-    final double HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
-    final double P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
-    final double P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
+    final double DRIVE_SPEED             = 1;     // Nominal speed for better accuracy.
+    final double TURN_SPEED              = 0.5;   // Nominal half speed for better accuracy.
+    final double HEADING_THRESHOLD       = 1 ;    // As tight as we can make it with an integer gyro
+    final double P_TURN_COEFF            = 0.1;   // Larger is more responsive, but also less stable
+    final double P_DRIVE_COEFF           = 0.15;  // Larger is more responsive, but also less stable
     final int value = 7600;
 
     //Declare all motors
@@ -37,7 +36,10 @@ public class LeftTrinityAutonomous extends LinearOpMode {
     public DcMotor rightMotorBack;
     public DcMotor leftMotorBack;
     public DcMotor liftMotor;
-    public Servo flickServo;;
+    public DcMotor extendMotor;
+    public Servo flickServo;
+    public CRServo vacuumServo;
+    public Servo armrotateServo;
     public ModernRoboticsI2cGyro gyro;
     private GoldAlignDetector detector;
 
@@ -50,10 +52,11 @@ public class LeftTrinityAutonomous extends LinearOpMode {
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
         liftMotor = hardwareMap.dcMotor.get("linearactuatorMotor");
         flickServo = hardwareMap.servo.get("depositServo");
-        leftMotorBack.setDirection(DcMotor.Direction.REVERSE);
-        leftMotorFront.setDirection(DcMotor.Direction.REVERSE);
-        rightMotorFront.setDirection(DcMotor.Direction.FORWARD);
-        rightMotorBack.setDirection(DcMotor.Direction.FORWARD);
+        extendMotor = hardwareMap.dcMotor.get("extendMotor");
+        leftMotorBack.setDirection(DcMotor.Direction.FORWARD);
+        leftMotorFront.setDirection(DcMotor.Direction.FORWARD);
+        rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
+        rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
         liftMotor.setDirection(DcMotor.Direction.FORWARD);
         gyro = (ModernRoboticsI2cGyro) hardwareMap.get("gyro");
 
@@ -113,91 +116,76 @@ public class LeftTrinityAutonomous extends LinearOpMode {
 
             //Center
             if (detector.getXPosition() > 180 && detector.getXPosition() < 420) {
-
-              /*  detector.disable();
-                StopDriving();
-                Lift(1.0, value);
-                gyroDrive(DRIVE_SPEED, 4.5, 0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroTurn(TURN_SPEED, 0);
-                strafe(STRAFE_SPEED, 1.25, 190);
-                sleep(1000);
-                gyroTurn(TURN_SPEED, 45);
-                flickServo.setPosition(Servo.MIN_POSITION);
-                sleep(1000);
-                gyroDrive(DRIVE_SPEED, -70, 45);*/
-
-
-                //Tank Drive (Single Sampling)
-
                 detector.disable();
                 StopDriving();
-                Lift(1.0, value);
-                gyroDrive(DRIVE_SPEED, 4.5, 0);
-                gyroHold(TURN_SPEED,0,1);
-                gyroTurn(TURN_SPEED, 90);
-                gyroHold(DRIVE_SPEED, 90, 1);
-                gyroDrive(DRIVE_SPEED, 60, 90);
-                flickServo.setPosition(Servo.MIN_POSITION);
-                sleep(1000);
-                gyroTurn(DRIVE_SPEED, 45);
-                gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, -73, 45);
-
-                //Mechanum Drive (Double Sampling)
-
-                /*detector.disable();
-                StopDriving();
                 Lift(DRIVE_SPEED, value);
-                gyroTurn(TURN_SPEED, 0);
+                gyroTurn(TURN_SPEED,0);
                 gyroHold(TURN_SPEED,0,0.5);
                 gyroDrive(DRIVE_SPEED, 3, 0);
-                strafe(STRAFE_SPEED, 2, 190);
                 gyroTurn(TURN_SPEED, 90);
-                gyroHold(TURN_SPEED,90,5);
+                gyroHold(TURN_SPEED,90,1);
+                gyroDrive(DRIVE_SPEED, 70, 90);
                 flickServo.setPosition(Servo.MIN_POSITION);
-                sleep(1000);
-                gyroDrive(DRIVE_SPEED, 60, 90);
-                strafe(STRAFE_SPEED, 5, 225);
-                gyroDrive(DRIVE_SPEED, -10, -90);*/
+                gyroTurn(TURN_SPEED, 41);
+                gyroHold(TURN_SPEED, 41, 0.5);
+                gyroDrive(DRIVE_SPEED, -80, 41);
             }
 
             //Right
             else if (detector.getXPosition() > 420){
+
                 detector.disable();
+                StopDriving();
                 Lift(DRIVE_SPEED, value);
-                gyroTurn(DRIVE_SPEED, 45);
-                gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 2, 45);
-                gyroTurn(DRIVE_SPEED, -35);
-                gyroHold(DRIVE_SPEED, -35, 0.5);
-                gyroDrive(DRIVE_SPEED, 40, -35);
-                gyroTurn(DRIVE_SPEED, 45);
-                gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 40, 45);
-                gyroTurn(DRIVE_SPEED,-45);
-                gyroHold(DRIVE_SPEED,-45,0.5);
+                gyroTurn(TURN_SPEED,0);
+                gyroHold(TURN_SPEED,0,0.5);
+                gyroDrive(DRIVE_SPEED, 3.5, 0);
+                gyroTurn(TURN_SPEED, 55);
+                gyroHold(TURN_SPEED, 55, 0.5);
+                gyroDrive(DRIVE_SPEED, 50, 55);
+                gyroTurn(TURN_SPEED, 130);
+                gyroHold(TURN_SPEED, 130, 0.5);
+                gyroDrive(DRIVE_SPEED, 40, 130);
+                gyroTurn(TURN_SPEED,41);
+                gyroHold(TURN_SPEED,41,0.5);
                 flickServo.setPosition(Servo.MIN_POSITION);
-                sleep(1000);
-                gyroDrive(DRIVE_SPEED, -73, -45);
+                sleep(500);
+                gyroDrive(DRIVE_SPEED, -80, 41);
+
+                /*detector.disable();
+                StopDriving();
+                Lift(DRIVE_SPEED, value);
+                gyroTurn(TURN_SPEED,0);
+                gyroHold(TURN_SPEED,0,0.5);
+                gyroDrive(DRIVE_SPEED, 3.5, 0);
+                gyroTurn(TURN_SPEED, 55);
+                gyroHold(TURN_SPEED, 55, 0.5);
+                gyroDrive(DRIVE_SPEED, 50, 55);
+                gyroTurn(TURN_SPEED, 45);
+                strafe(DRIVE_SPEED, 45, 180);
+                flickServo.setPosition(Servo.MIN_POSITION);
+                sleep(500);
+                gyroDrive(DRIVE_SPEED, -85, 41);*/
             }
 
             //Left
             else if (detector.getXPosition() < 180) {
+
                 detector.disable();
+                StopDriving();
                 Lift(DRIVE_SPEED, value);
-                gyroTurn(DRIVE_SPEED, 45);
-                gyroHold(DRIVE_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 2, 45);
-                gyroTurn(DRIVE_SPEED, 25);
-                gyroHold(DRIVE_SPEED, 25, 0.5);
-                gyroDrive(DRIVE_SPEED, 46, 25);
-                gyroTurn(DRIVE_SPEED, -45);
-                gyroHold(DRIVE_SPEED, -45, 0.5);
-                gyroDrive(DRIVE_SPEED, 35, -45);
+                gyroTurn(TURN_SPEED,0);
+                gyroHold(TURN_SPEED,0,0.5);
+                gyroDrive(DRIVE_SPEED, 3.5, 0);
+                gyroTurn(TURN_SPEED, 115);
+                gyroHold(TURN_SPEED, 115, 0.5);
+                gyroDrive(DRIVE_SPEED, 53, 115);
+                gyroTurn(TURN_SPEED, 45);
+                gyroHold(TURN_SPEED, 45, 0.5);
+                gyroDrive(DRIVE_SPEED, 15, 45);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -80, -45);
+                gyroDrive(DRIVE_SPEED, -65, 41);
             }
 
             telemetry.addData("Path", "Complete");
@@ -247,66 +235,100 @@ public class LeftTrinityAutonomous extends LinearOpMode {
     }
 
 
-    public void strafe(double speed, double time, double angle){
+    public void strafe(double speed, double distance, double angle){
+        int     newLeftTargetFront;
+        int     newLeftTargetBack;
+        int     newRightTargetFront;
+        int     newRightTargetBack;
+        int     moveCounts;
         double angleInterval = speed/45;
         double speedInterval;
-        ElapsedTime holdTimer = new ElapsedTime();
 
-        // keep looping while we have time remaining.
-        holdTimer.reset();
-        while (opModeIsActive() && (holdTimer.time() < time)) {
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
 
-            if (angle >= 0 && angle < 45){
-                speedInterval = 45 - angle;
-                leftMotorFront.setPower(speed);
-                rightMotorBack.setPower(speed);
-                rightMotorFront.setPower(-1*(speedInterval*angleInterval));
-                leftMotorBack.setPower(-1*(speedInterval*angleInterval));
-            } else if(angle >= 45 && angle < 90){
-                speedInterval = angle - 45;
-                leftMotorFront.setPower(speed);
-                rightMotorBack.setPower(speed);
-                rightMotorFront.setPower(speedInterval*angleInterval);
-                leftMotorBack.setPower(speedInterval*angleInterval);
-            } else if (angle >= 90 && angle < 135){
-                speedInterval = 135 - angle;
-                leftMotorFront.setPower(speedInterval*angleInterval);
-                rightMotorBack.setPower(speedInterval*angleInterval);
-                rightMotorFront.setPower(speed);
-                leftMotorBack.setPower(speed);
-            } else if (angle >= 135 && angle < 180){
-                speedInterval = angle - 135;
-                leftMotorFront.setPower(-1*(speedInterval*angleInterval));
-                rightMotorBack.setPower(-1*(speedInterval*angleInterval));
-                rightMotorFront.setPower(speed);
-                leftMotorBack.setPower(speed);
-            } else if (angle >= 180 && angle < 225){
-                speedInterval = 225 - angle;
-                leftMotorFront.setPower(-1*speed);
-                rightMotorBack.setPower(-1*speed);
-                rightMotorFront.setPower(speedInterval*angleInterval);
-                leftMotorBack.setPower(speedInterval*angleInterval);
-            } else if (angle >= 225 && angle < 270){
-                speedInterval = angle - 225;
-                leftMotorFront.setPower(-1*speed);
-                rightMotorBack.setPower(-1*speed);
-                rightMotorFront.setPower(-1*(speedInterval*angleInterval));
-                leftMotorBack.setPower(-1*(speedInterval*angleInterval));
-            } else if (angle >= 270 && angle < 315){
-                speedInterval = 315 - angle;
-                leftMotorFront.setPower(-1*(speedInterval*angleInterval));
-                rightMotorBack.setPower(-1*(speedInterval*angleInterval));
-                rightMotorFront.setPower(-1*speed);
-                leftMotorBack.setPower(-1*speed);
-            } else if (angle >= 315 && angle < 360){
-                speedInterval = angle - 315;
-                leftMotorFront.setPower(speedInterval*angleInterval);
-                rightMotorBack.setPower(speedInterval*angleInterval);
-                rightMotorFront.setPower(-1*speed);
-                leftMotorBack.setPower(-1*speed);
+            // Determine new target position, and pass to motor controller
+            moveCounts = (int)(distance * COUNTS_PER_INCH);
+            newLeftTargetFront = leftMotorFront.getCurrentPosition() + moveCounts;
+            newLeftTargetBack = leftMotorBack.getCurrentPosition() + moveCounts;
+            newRightTargetFront = rightMotorFront.getCurrentPosition() + moveCounts;
+            newRightTargetBack = rightMotorBack.getCurrentPosition() + moveCounts;
+
+            // Set Target and Turn On RUN_TO_POSITION
+            rightMotorFront.setTargetPosition(newRightTargetFront);
+            rightMotorBack.setTargetPosition(newRightTargetBack);
+            leftMotorFront.setTargetPosition(newLeftTargetFront);
+            leftMotorBack.setTargetPosition(newLeftTargetBack);
+
+            rightMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftMotorFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            //start motion
+            while(opModeIsActive()){
+                if (angle >= 0 && angle < 45){
+                    speedInterval = 45 - angle;
+                    leftMotorFront.setPower(speed);
+                    rightMotorBack.setPower(speed);
+                    rightMotorFront.setPower(-1*(speedInterval*angleInterval));
+                    leftMotorBack.setPower(-1*(speedInterval*angleInterval));
+                } else if(angle >= 45 && angle < 90){
+                    speedInterval = angle - 45;
+                    leftMotorFront.setPower(speed);
+                    rightMotorBack.setPower(speed);
+                    rightMotorFront.setPower(speedInterval*angleInterval);
+                    leftMotorBack.setPower(speedInterval*angleInterval);
+                } else if (angle >= 90 && angle < 135){
+                    speedInterval = 135 - angle;
+                    leftMotorFront.setPower(speedInterval*angleInterval);
+                    rightMotorBack.setPower(speedInterval*angleInterval);
+                    rightMotorFront.setPower(speed);
+                    leftMotorBack.setPower(speed);
+                } else if (angle >= 135 && angle < 180){
+                    speedInterval = angle - 135;
+                    leftMotorFront.setPower(-1*(speedInterval*angleInterval));
+                    rightMotorBack.setPower(-1*(speedInterval*angleInterval));
+                    rightMotorFront.setPower(speed);
+                    leftMotorBack.setPower(speed);
+                } else if (angle >= 180 && angle < 225){
+                    speedInterval = 225 - angle;
+                    leftMotorFront.setPower(-1*speed);
+                    rightMotorBack.setPower(-1*speed);
+                    rightMotorFront.setPower(speedInterval*angleInterval);
+                    leftMotorBack.setPower(speedInterval*angleInterval);
+                } else if (angle >= 225 && angle < 270){
+                    speedInterval = angle - 225;
+                    leftMotorFront.setPower(-1*speed);
+                    rightMotorBack.setPower(-1*speed);
+                    rightMotorFront.setPower(-1*(speedInterval*angleInterval));
+                    leftMotorBack.setPower(-1*(speedInterval*angleInterval));
+                } else if (angle >= 270 && angle < 315){
+                    speedInterval = 315 - angle;
+                    leftMotorFront.setPower(-1*(speedInterval*angleInterval));
+                    rightMotorBack.setPower(-1*(speedInterval*angleInterval));
+                    rightMotorFront.setPower(-1*speed);
+                    leftMotorBack.setPower(-1*speed);
+                } else if (angle >= 315 && angle < 360){
+                    speedInterval = angle - 315;
+                    leftMotorFront.setPower(speedInterval*angleInterval);
+                    rightMotorBack.setPower(speedInterval*angleInterval);
+                    rightMotorFront.setPower(-1*speed);
+                    leftMotorBack.setPower(-1*speed);
+                }
             }
-            // Update telemetry & Allow time for other processes to run.
-            telemetry.update();
+
+            // Stop all motion;
+            leftMotorFront.setPower(0);
+            leftMotorBack.setPower(0);
+            rightMotorFront.setPower(0);
+            rightMotorBack.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            rightMotorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftMotorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 

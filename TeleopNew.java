@@ -4,7 +4,6 @@ import  com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
@@ -44,10 +43,10 @@ public class TeleopNew extends LinearOpMode
         depositServo = hardwareMap.servo.get("depositServo");
         armrotateServo = hardwareMap.servo.get("armrotateServo");
         vacuumServo = hardwareMap.crservo.get("vacuumServo");
-        leftMotorBack.setDirection(DcMotor.Direction.REVERSE);
-        leftMotorFront.setDirection(DcMotor.Direction.REVERSE);
-        rightMotorFront.setDirection(DcMotor.Direction.FORWARD);
-        rightMotorBack.setDirection(DcMotor.Direction.FORWARD);
+        leftMotorBack.setDirection(DcMotor.Direction.FORWARD);
+        leftMotorFront.setDirection(DcMotor.Direction.FORWARD);
+        rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
+        rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
         linearactuatorMotor.setDirection(DcMotor.Direction.FORWARD);
 
 
@@ -61,8 +60,6 @@ public class TeleopNew extends LinearOpMode
             double GoUPandDOWN;
             double arm_out;
             double arm_up;
-
-            depositServo.setPosition(Servo.MAX_POSITION);
 
             //Gamepad 1 Portion
             //-------------------------------------------------------------------------
@@ -101,30 +98,26 @@ public class TeleopNew extends LinearOpMode
             rightMotorBack.setPower(drive + strafe - rotate);
             rightMotorFront.setPower(drive - strafe - rotate);
 
-            //Gamepad 2 Portion
-            //-------------------------------------------------------------------------
-
             //Linear Actuator Control (Motor)
-            GoUPandDOWN = gamepad2.right_trigger;
+            GoUPandDOWN = gamepad2.left_trigger;
 
-            if (gamepad2.right_trigger > 0.25)
+            if (gamepad1.right_bumper)
             {
                 GoUPandDOWN = 1.0;
             }
 
-            if (gamepad2.left_trigger > 0.25)
+            if (gamepad1.left_bumper)
             {
                 GoUPandDOWN = -1.0;
             }
 
-            GoUPandDOWN = Range.clip(GoUPandDOWN, -1, 1);
-
-            GoUPandDOWN = (float) scaleInput(GoUPandDOWN);
-
             linearactuatorMotor.setPower(GoUPandDOWN);
 
+            //Gamepad 2 Portion
+            //-------------------------------------------------------------------------
+
             //Linear Slide Up Control (Motor)
-            arm_up = gamepad2.left_stick_y;
+            arm_up = gamepad2.right_stick_y;
 
             arm_up = Range.clip(arm_up, -1,1);
 
@@ -133,7 +126,7 @@ public class TeleopNew extends LinearOpMode
             liftMotor.setPower(arm_up);
 
             //Linear Slide Out Control (Motor)
-            arm_out = gamepad2.right_stick_y;
+            arm_out = gamepad2.left_stick_y;
 
             arm_out = Range.clip(arm_out, -1,1);
 
@@ -157,45 +150,39 @@ public class TeleopNew extends LinearOpMode
             }
 
             //Arm Rotate Control (Servo)
-            if (gamepad2.dpad_up)
-            {
-                //take current value and add 0.1 each time pressed
-                double position = armrotateServo.getPosition();
-                position += 0.1;
-                armrotateServo.setPosition(position);
-            }
-
             if (gamepad2.dpad_down)
             {
                 //take current value and add 0.1 each time pressed
-                double position = armrotateServo.getPosition();
-                position -= 0.1;
-                armrotateServo.setPosition(position);
+                armrotateServo.setPosition(armrotateServo.getPosition() + 0.1);
             }
 
-            if (gamepad2.dpad_left)
+            if (gamepad2.dpad_up)
+            {
+                //take current value and decrease 0.1 each time pressed
+                armrotateServo.setPosition(armrotateServo.getPosition() - 0.1);
+            }
+
+            if (gamepad2.right_bumper)
             {
                 armrotateServo.setPosition(0.5);
             }
 
             //Arm Rotate Control (Servo)
-            if (gamepad2.right_stick_y > 0.5)
+            if (gamepad2.dpad_right)
             {
-                armrotateServo.setPosition(0.0);
-            }
-
-            if (gamepad2.dpad_down)
-            {
-                armrotateServo.setPosition(1.0);
+                //take current value and add 0.1 each time pressed
+                liftrotateServo.setPosition(liftrotateServo.getPosition() + 0.1);
             }
 
             if (gamepad2.dpad_left)
             {
-                armrotateServo.setPosition(0.5);
+                //take current value and decrease 0.1 each time pressed
+                liftrotateServo.setPosition(liftrotateServo.getPosition() - 0.1);
             }
 
             //Fail safe actions
             //-------------------------------------------------------------------------
+            depositServo.setPosition(Servo.MAX_POSITION);
         }
     }
 

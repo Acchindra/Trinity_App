@@ -43,15 +43,14 @@ public class RightTrinityAutonomous extends LinearOpMode {
 
     //Declare all variables
     final float CIRCUMFERENCE = (float)(3.93701 * Math.PI);
-    final int ENCODERTICKS = 723;
-    final double GEARRATIO = 0.34;
+    final int ENCODERTICKS = 1680;
+    final double GEARRATIO = 0.67;
     final double COUNTS_PER_INCH = (ENCODERTICKS * GEARRATIO) / (CIRCUMFERENCE);
-    final double STRAFE_SPEED = 0.4;
     final double DRIVE_SPEED             = 1;     // Nominal speed for better accuracy.
-    final double TURN_SPEED              = 0.5;
-    final double HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
-    final double P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
-    final double P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
+    final double TURN_SPEED              = 0.5;   // Nominal half speed for better accuracy.
+    final double HEADING_THRESHOLD       = 1 ;    // As tight as we can make it with an integer gyro
+    final double P_TURN_COEFF            = 0.1;   // Larger is more responsive, but also less stable
+    final double P_DRIVE_COEFF           = 0.15;  // Larger is more responsive, but also less stable
     final int value = 7600;
 
 
@@ -62,23 +61,30 @@ public class RightTrinityAutonomous extends LinearOpMode {
     public DcMotor rightMotorBack;
     public DcMotor leftMotorBack;
     public DcMotor liftMotor;
-    public Servo flickServo;;
+    public DcMotor extendMotor;
+    public Servo flickServo;
+    public CRServo vacuumServo;
+    public Servo armrotateServo;
     public ModernRoboticsI2cGyro gyro;
     private GoldAlignDetector detector;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
+        ElapsedTime timer = new ElapsedTime();
         rightMotorFront = hardwareMap.dcMotor.get("rightMotorFront");
         leftMotorFront = hardwareMap.dcMotor.get("leftMotorFront");
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
         liftMotor = hardwareMap.dcMotor.get("linearactuatorMotor");
         flickServo = hardwareMap.servo.get("depositServo");
-        leftMotorBack.setDirection(DcMotor.Direction.REVERSE);
-        leftMotorFront.setDirection(DcMotor.Direction.REVERSE);
-        rightMotorFront.setDirection(DcMotor.Direction.FORWARD);
-        rightMotorBack.setDirection(DcMotor.Direction.FORWARD);
+        extendMotor = hardwareMap.dcMotor.get("extendMotor");
+        armrotateServo = hardwareMap.servo.get("armrotateServo");
+        vacuumServo = hardwareMap.crservo.get("vacuumServo");
+        leftMotorBack.setDirection(DcMotor.Direction.FORWARD);
+        leftMotorFront.setDirection(DcMotor.Direction.FORWARD);
+        rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
+        rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
         liftMotor.setDirection(DcMotor.Direction.FORWARD);
         gyro = (ModernRoboticsI2cGyro) hardwareMap.get("gyro");
 
@@ -146,19 +152,22 @@ public class RightTrinityAutonomous extends LinearOpMode {
                 Lift(DRIVE_SPEED, value);
                 gyroTurn(TURN_SPEED,0);
                 gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 15, 0);
+                gyroDrive(DRIVE_SPEED, 3.5, 0);
                 gyroTurn(TURN_SPEED, 90);
                 gyroHold(TURN_SPEED, 90, 0.5);
-                gyroDrive(DRIVE_SPEED, 110, 90);
-                gyroDrive(DRIVE_SPEED, -100, 90);
+                gyroDrive(DRIVE_SPEED, 28, 90);
+                gyroDrive(DRIVE_SPEED, -24, 90);
                 gyroTurn(TURN_SPEED, 140);
-                gyroDrive(DRIVE_SPEED, 197, 140);
+                gyroHold(TURN_SPEED, 140, 0.5);
+                gyroDrive(DRIVE_SPEED, 54, 140);
                 gyroTurn(TURN_SPEED, 215);
                 gyroHold(TURN_SPEED, 215, 0.5);
-                gyroDrive(DRIVE_SPEED, 180, 215);
+                gyroDrive(DRIVE_SPEED, 50, 215);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -300, 217);
+                gyroTurn(TURN_SPEED, 215);
+                gyroHold(TURN_SPEED, 215, 0.5);
+                gyroDrive(DRIVE_SPEED, -75, 215);
             }
 
             //Right
@@ -169,38 +178,44 @@ public class RightTrinityAutonomous extends LinearOpMode {
                 Lift(DRIVE_SPEED, value);
                 gyroTurn(TURN_SPEED,0);
                 gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 15, 0);
-                gyroTurn(DRIVE_SPEED, 50);
-                gyroHold(DRIVE_SPEED, 50, 0.5);
-                gyroDrive(DRIVE_SPEED, 118, 50);
-                gyroDrive(DRIVE_SPEED, -118, 50);
-                gyroTurn(DRIVE_SPEED, 132);
-                gyroDrive(DRIVE_SPEED, 205, 132);
-                gyroTurn(DRIVE_SPEED, 208);
-                gyroHold(DRIVE_SPEED, 208, 0.5);
-                gyroDrive(DRIVE_SPEED, 197, 208);
+                gyroDrive(DRIVE_SPEED, 3.5, 0);
+                gyroTurn(TURN_SPEED, 55);
+                gyroHold(TURN_SPEED, 55, 0.5);
+                gyroDrive(DRIVE_SPEED, 30, 55);
+                gyroDrive(DRIVE_SPEED, -29, 55);
+                gyroTurn(TURN_SPEED, 135);
+                gyroHold(TURN_SPEED, 135, 0.5);
+                gyroDrive(DRIVE_SPEED, 55, 140);
+                gyroTurn(TURN_SPEED, 215);
+                gyroHold(TURN_SPEED, 215, 0.5);
+                gyroDrive(DRIVE_SPEED, 47, 215);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -312, 215);
+                gyroDrive(DRIVE_SPEED, -75, 215);
             }
 
             //Left
             else if (detector.getXPosition() < 180)
             {
+
                 detector.disable();
                 StopDriving();
                 Lift(DRIVE_SPEED, value);
                 gyroTurn(TURN_SPEED,0);
                 gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 15, 0);
-                gyroTurn(DRIVE_SPEED, 128);
-                gyroDrive(DRIVE_SPEED, 200, 128);
-                gyroTurn(DRIVE_SPEED, 208);
-                gyroHold(DRIVE_SPEED, 208, 0.5);
-                gyroDrive(DRIVE_SPEED, 210, 208);
+                gyroDrive(DRIVE_SPEED, 3.5, 0);
+                gyroTurn(TURN_SPEED,135);
+                gyroHold(TURN_SPEED,135,0.5);
+                gyroDrive(DRIVE_SPEED, 55, 135);
+                gyroTurn(TURN_SPEED, 215);
+                gyroHold(TURN_SPEED, 215, 0.5);
+                gyroDrive(DRIVE_SPEED, 50, 215);
                 flickServo.setPosition(Servo.MIN_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -310, 203);
+                gyroDrive(DRIVE_SPEED, -20, 215);
+                gyroTurn(TURN_SPEED, 203);
+                gyroHold(TURN_SPEED, 203, 0.5);
+                gyroDrive(DRIVE_SPEED, -55, 203);
             }
 
             telemetry.addData("Path", "Complete");
@@ -284,6 +299,7 @@ public class RightTrinityAutonomous extends LinearOpMode {
             leftMotorBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion.
+            speed = Range.clip(Math.abs(speed), 0.0, 1.0);
             rightMotorFront.setPower(speed);
             rightMotorBack.setPower(speed);
             leftMotorFront.setPower(speed);
@@ -312,10 +328,10 @@ public class RightTrinityAutonomous extends LinearOpMode {
                     rightSpeed /= max;
                 }
 
-                leftMotorFront.setPower(leftSpeed/2);
-                leftMotorBack.setPower(leftSpeed/2);
-                rightMotorFront.setPower(rightSpeed/2);
-                rightMotorBack.setPower(rightSpeed/2);
+                leftMotorFront.setPower(leftSpeed);
+                leftMotorBack.setPower(leftSpeed);
+                rightMotorFront.setPower(rightSpeed);
+                rightMotorBack.setPower(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);
@@ -336,6 +352,70 @@ public class RightTrinityAutonomous extends LinearOpMode {
             rightMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftMotorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             leftMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
+
+    public void strafe(double speed, double time, double angle){
+        // 1 sec = 33 "distance"
+        double angleInterval = speed/45;
+        double speedInterval;
+        ElapsedTime holdTimer = new ElapsedTime();
+
+        // keep looping while we have time remaining.
+        holdTimer.reset();
+        while (opModeIsActive() && (holdTimer.time() < time)) {
+
+            if (angle >= 0 && angle < 45){
+                speedInterval = 45 - angle;
+                leftMotorFront.setPower(speed);
+                rightMotorBack.setPower(speed);
+                rightMotorFront.setPower(-1*(speedInterval*angleInterval));
+                leftMotorBack.setPower(-1*(speedInterval*angleInterval));
+            } else if(angle >= 45 && angle < 90){
+                speedInterval = angle - 45;
+                leftMotorFront.setPower(speed);
+                rightMotorBack.setPower(speed);
+                rightMotorFront.setPower(speedInterval*angleInterval);
+                leftMotorBack.setPower(speedInterval*angleInterval);
+            } else if (angle >= 90 && angle < 135){
+                speedInterval = 135 - angle;
+                leftMotorFront.setPower(speedInterval*angleInterval);
+                rightMotorBack.setPower(speedInterval*angleInterval);
+                rightMotorFront.setPower(speed);
+                leftMotorBack.setPower(speed);
+            } else if (angle >= 135 && angle < 180){
+                speedInterval = angle - 135;
+                leftMotorFront.setPower(-1*(speedInterval*angleInterval));
+                rightMotorBack.setPower(-1*(speedInterval*angleInterval));
+                rightMotorFront.setPower(speed);
+                leftMotorBack.setPower(speed);
+            } else if (angle >= 180 && angle < 225){
+                speedInterval = 225 - angle;
+                leftMotorFront.setPower(-1*speed);
+                rightMotorBack.setPower(-1*speed);
+                rightMotorFront.setPower(speedInterval*angleInterval);
+                leftMotorBack.setPower(speedInterval*angleInterval);
+            } else if (angle >= 225 && angle < 270){
+                speedInterval = angle - 225;
+                leftMotorFront.setPower(-1*speed);
+                rightMotorBack.setPower(-1*speed);
+                rightMotorFront.setPower(-1*(speedInterval*angleInterval));
+                leftMotorBack.setPower(-1*(speedInterval*angleInterval));
+            } else if (angle >= 270 && angle < 315){
+                speedInterval = 315 - angle;
+                leftMotorFront.setPower(-1*(speedInterval*angleInterval));
+                rightMotorBack.setPower(-1*(speedInterval*angleInterval));
+                rightMotorFront.setPower(-1*speed);
+                leftMotorBack.setPower(-1*speed);
+            } else if (angle >= 315 && angle < 360){
+                speedInterval = angle - 315;
+                leftMotorFront.setPower(speedInterval*angleInterval);
+                rightMotorBack.setPower(speedInterval*angleInterval);
+                rightMotorFront.setPower(-1*speed);
+                leftMotorBack.setPower(-1*speed);
+            }
+            // Update telemetry & Allow time for other processes to run.
+            telemetry.update();
         }
     }
 
