@@ -51,7 +51,8 @@ public class CraterAutonomous extends LinearOpMode {
     final double HEADING_THRESHOLD       = 1 ;    // As tight as we can make it with an integer gyro
     final double P_TURN_COEFF            = 0.1;   // Larger is more responsive, but also less stable
     final double P_DRIVE_COEFF           = 0.15;  // Larger is more responsive, but also less stable
-    final int value = 7600;
+    final int value = 7540;
+    final double encoder = 0.512878385554965;
 
     //Motor Count -- 8 / 8 (Max Usage)
     public DcMotor rightMotorFront;
@@ -59,18 +60,16 @@ public class CraterAutonomous extends LinearOpMode {
     public DcMotor rightMotorBack;
     public DcMotor leftMotorBack;
     public DcMotor liftMotor;
-    public DcMotor extendMotorOne;
-    public DcMotor extendMotorTwo;
+    public DcMotor extendMotor;
     public DcMotor linearactuatorMotor;
 
-    //Servo Count -- 4 / 12 (8 left)
-    public Servo rotateServoOne;//black box
-    //public Servo rotateServoTwo;//black box
-    public Servo depositServo;
+    //Servo Count -- 2 / 12 (8 left)
+    public Servo rotateServo;//black box
     public CRServo vacuumServo;//collection mechanism
 
     public ModernRoboticsI2cGyro gyro;
     private GoldAlignDetector detector;
+
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -80,20 +79,15 @@ public class CraterAutonomous extends LinearOpMode {
         rightMotorBack = hardwareMap.dcMotor.get("rightMotorBack");
         leftMotorBack = hardwareMap.dcMotor.get("leftMotorBack");
         liftMotor = hardwareMap.dcMotor.get("liftMotor");
-        extendMotorOne = hardwareMap.dcMotor.get("extendMotorOne");
-        extendMotorTwo = hardwareMap.dcMotor.get("extendMotorTwo");
+        extendMotor = hardwareMap.dcMotor.get("extendMotor");
         linearactuatorMotor = hardwareMap.dcMotor.get("linearactuatorMotor");
-        rotateServoOne = hardwareMap.servo.get("rotateServoOne");
-        depositServo = hardwareMap.servo.get("depositServo");
-        //rotateServoTwo = hardwareMap.servo.get("rotateServoTwo");
+        rotateServo = hardwareMap.servo.get("rotateServo");
         vacuumServo = hardwareMap.crservo.get("vacuumServo");
         leftMotorBack.setDirection(DcMotor.Direction.FORWARD);
         leftMotorFront.setDirection(DcMotor.Direction.FORWARD);
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
         linearactuatorMotor.setDirection(DcMotor.Direction.FORWARD);
-        extendMotorOne.setDirection(DcMotor.Direction.FORWARD);
-        extendMotorTwo.setDirection(DcMotor.Direction.FORWARD);
         liftMotor.setDirection(DcMotor.Direction.REVERSE);
         gyro = (ModernRoboticsI2cGyro) hardwareMap.get("gyro");
 
@@ -114,8 +108,7 @@ public class CraterAutonomous extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearactuatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        extendMotorOne.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        extendMotorTwo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extendMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry.addData(">", "Robot Ready.");
@@ -126,8 +119,7 @@ public class CraterAutonomous extends LinearOpMode {
         rightMotorFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftMotorBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearactuatorMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        extendMotorOne.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        extendMotorTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        extendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
@@ -136,12 +128,10 @@ public class CraterAutonomous extends LinearOpMode {
                 telemetry.addData(">", "Robot Heading = %d", gyro.getIntegratedZValue());
                 telemetry.update();
             }
-
             telemetry.addData("Status", "Good Luck Drivers");
 
-            // Initialize the detector
             detector = new GoldAlignDetector();
-            detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance());
+            detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
             detector.useDefaults();
 
             // Optional Tuning
@@ -159,32 +149,46 @@ public class CraterAutonomous extends LinearOpMode {
             detector.enable();
             sleep(1500);
 
+
             //Center
             if (detector.getXPosition() > 180 && detector.getXPosition() < 420)
             {
                 detector.disable();
                 StopDriving();
                 move(linearactuatorMotor,DRIVE_SPEED,value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 3.5, 0);
+                gyroTurn(TURN_SPEED,14);
+                gyroDrive(DRIVE_SPEED, 5, 14);
+                gyroTurn(TURN_SPEED,30);
+                gyroDrive(DRIVE_SPEED, 5, 30);
                 gyroTurn(TURN_SPEED, 90);
                 gyroHold(TURN_SPEED, 90, 0.5);
-                gyroDrive(DRIVE_SPEED, 10, 90);
-                //score();
-                gyroDrive(DRIVE_SPEED, 18, 90);
+                gyroDrive(DRIVE_SPEED, 28, 90);
                 gyroDrive(DRIVE_SPEED, -24, 90);
                 gyroTurn(TURN_SPEED, 140);
                 gyroHold(TURN_SPEED, 140, 0.5);
-                gyroDrive(DRIVE_SPEED, 54, 140);
+                gyroDrive(DRIVE_SPEED, 52, 140);
                 gyroTurn(TURN_SPEED, 215);
                 gyroHold(TURN_SPEED, 215, 0.5);
-                gyroDrive(DRIVE_SPEED, 50, 215);
-                depositServo.setPosition(Servo.MAX_POSITION);
+                gyroDrive(DRIVE_SPEED, 48, 215);
+                move(extendMotor,1,(int)(2000*encoder));
+                rotateServo.setPosition(Servo.MAX_POSITION);
                 sleep(1000);
+                vacuumServo.setPower(-1.0);
+                sleep(500);
+                vacuumServo.setPower(1.0);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                sleep(500);
                 gyroTurn(TURN_SPEED, 215);
                 gyroHold(TURN_SPEED, 215, 0.5);
-                gyroDrive(DRIVE_SPEED, -75, 215);
+                gyroDrive(DRIVE_SPEED, -51, 215);
+                gyroTurn(TURN_SPEED, 380);
+                gyroHold(TURN_SPEED,380,0.5);
+                move(extendMotor,1,(int)(3000*encoder));
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                move(extendMotor,1,(int)(6000*encoder));
+
+                sleep(10000);
             }
 
             //Right
@@ -193,48 +197,80 @@ public class CraterAutonomous extends LinearOpMode {
                 detector.disable();
                 StopDriving();
                 move(linearactuatorMotor,DRIVE_SPEED,value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 3.5, 0);
+                gyroTurn(TURN_SPEED,14);
+                gyroDrive(DRIVE_SPEED, 5, 14);
                 gyroTurn(TURN_SPEED, 55);
                 gyroHold(TURN_SPEED, 55, 0.5);
-                gyroDrive(DRIVE_SPEED, 10, 55);
-                //score();
-                gyroDrive(DRIVE_SPEED, 20, 55);
-                gyroDrive(DRIVE_SPEED, -29, 55);
+                gyroDrive(DRIVE_SPEED, 30, 55);
+                gyroDrive(DRIVE_SPEED, -27, 55);
                 gyroTurn(TURN_SPEED, 135);
                 gyroHold(TURN_SPEED, 135, 0.5);
-                gyroDrive(DRIVE_SPEED, 55, 140);
+                gyroDrive(DRIVE_SPEED, 50, 135);
                 gyroTurn(TURN_SPEED, 215);
                 gyroHold(TURN_SPEED, 215, 0.5);
-                gyroDrive(DRIVE_SPEED, 47, 215);
-                depositServo.setPosition(Servo.MAX_POSITION);
+                gyroDrive(DRIVE_SPEED, 44, 215);
+                move(extendMotor,1,(int)(2000*encoder));
+                rotateServo.setPosition(Servo.MAX_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -75, 215);
+                vacuumServo.setPower(-1.0);
+                sleep(500);
+                vacuumServo.setPower(1.0);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                gyroTurn(TURN_SPEED, 215);
+                gyroHold(TURN_SPEED, 215, 0.5);
+                gyroDrive(DRIVE_SPEED, -47, 215);
+                gyroTurn(TURN_SPEED, 380);
+                gyroHold(TURN_SPEED,380,0.5);
+                move(extendMotor,1,(int)(3000*encoder));
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                move(extendMotor,1,(int)(6000*encoder));
+                sleep(10000);
             }
 
             //Left
             else if (detector.getXPosition() < 180)
             {
-
                 detector.disable();
                 StopDriving();
                 move(linearactuatorMotor,DRIVE_SPEED,value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 3.5, 0);
+                gyroTurn(TURN_SPEED,14);
+                gyroDrive(DRIVE_SPEED, 5, 14);
+                gyroTurn(TURN_SPEED,30);
+                gyroDrive(DRIVE_SPEED, 5, 30);
                 gyroTurn(TURN_SPEED,135);
-                gyroHold(TURN_SPEED,135,0.5);
-                gyroDrive(DRIVE_SPEED, 55, 135);
+                gyroHold(TURN_SPEED,135,1);
+                gyroDrive(DRIVE_SPEED, 54, 135);
                 gyroTurn(TURN_SPEED, 215);
                 gyroHold(TURN_SPEED, 215, 0.5);
                 gyroDrive(DRIVE_SPEED, 50, 215);
-                depositServo.setPosition(Servo.MAX_POSITION);
+                move(extendMotor,1,(int)(2000*encoder));
+                rotateServo.setPosition(Servo.MAX_POSITION);
                 sleep(1000);
+                vacuumServo.setPower(-1.0);
+                sleep(500);
+                vacuumServo.setPower(1.0);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                gyroTurn(TURN_SPEED, 215);
+                gyroHold(TURN_SPEED, 215, 0.5);
                 gyroDrive(DRIVE_SPEED, -20, 215);
-                gyroTurn(TURN_SPEED, 203);
-                gyroHold(TURN_SPEED, 203, 0.5);
-                gyroDrive(DRIVE_SPEED, -55, 203);
+                gyroTurn(TURN_SPEED, 367);
+                gyroHold(TURN_SPEED, 367, 0.5);
+                gyroDrive(DRIVE_SPEED, 21, 367);
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                sleep(2000);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                gyroTurn(TURN_SPEED, 383);
+                gyroHold(TURN_SPEED, 383, 0.5);
+                gyroDrive(DRIVE_SPEED, 17, 383);
+                move(extendMotor,1,(int)(3000*encoder));
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                move(extendMotor,1,(int)(6000*encoder));
+                sleep(10000);
             }
 
             telemetry.addData("Path", "Complete");
@@ -244,20 +280,13 @@ public class CraterAutonomous extends LinearOpMode {
         }
     }
 
-    public void move (DcMotor motor, double power, int distance)
+    public void move(DcMotor motor, double power, int position)
     {
-        int moveNumber;
-        int move;
-
         // Ensure that the opmode is still active
         if (opModeIsActive())
         {
-            // Determine new target position, and pass to motor controller
-            moveNumber = (int)(distance);
-            move = motor.getCurrentPosition() + moveNumber;
-
             // Set Target and Turn On RUN_TO_POSITION
-            motor.setTargetPosition(move);
+            motor.setTargetPosition(position);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion
@@ -273,20 +302,6 @@ public class CraterAutonomous extends LinearOpMode {
         }
     }
 
-    public void score(){
-        extend(1000);
-        vacuumServo.setPower(1);
-        rotateServoOne.setPosition(Servo.MAX_POSITION);
-        //rotateServoTwo.setPosition(Servo.MIN_POSITION);
-        sleep(2000);
-        extend(500);
-        //rotateServoTwo.setPosition(Servo.MAX_POSITION);
-        rotateServoOne.setPosition(Servo.MIN_POSITION);
-        move(liftMotor,DRIVE_SPEED, 3000);
-        sleep(1000);
-        move(liftMotor,DRIVE_SPEED, 0);
-    }
-
     public void StopDriving ()
     {
         leftMotorFront.setPower(0);
@@ -295,27 +310,6 @@ public class CraterAutonomous extends LinearOpMode {
         leftMotorBack.setPower(0);
         liftMotor.setPower(0);
     }
-
-    public void extend (int position)
-    {
-        // Ensure that the opmode is still active
-        if (opModeIsActive())
-        {
-            // Set Target and Turn On RUN_TO_POSITION
-            extendMotorOne.setTargetPosition(position);
-            extendMotorTwo.setTargetPosition(position);
-            extendMotorOne.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            extendMotorTwo.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            if (position > extendMotorOne.getCurrentPosition() || position > extendMotorTwo.getCurrentPosition()) {
-                extendMotorOne.setPower(0.5);
-                extendMotorTwo.setPower(0.5);
-            } else {
-                extendMotorOne.setPower(-0.5);
-                extendMotorTwo.setPower(-0.5);
-            }
-        }
-    }
-
 
     public void strafe(double speed, double distance, double angle){
         int     newLeftTargetFront;

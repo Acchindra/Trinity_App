@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -28,7 +27,8 @@ public class DepotAutonomous extends LinearOpMode {
     final double HEADING_THRESHOLD       = 1 ;    // As tight as we can make it with an integer gyro
     final double P_TURN_COEFF            = 0.1;   // Larger is more responsive, but also less stable
     final double P_DRIVE_COEFF           = 0.15;  // Larger is more responsive, but also less stable
-    final int value = 7600;
+    final int value = 7540;
+    final double encoder = 0.512878385554965;
 
     //Motor Count -- 8 / 8 (Max Usage)
     public DcMotor rightMotorFront;
@@ -39,10 +39,8 @@ public class DepotAutonomous extends LinearOpMode {
     public DcMotor extendMotor;
     public DcMotor linearactuatorMotor;
 
-    //Servo Count -- 4 / 12 (8 left)
-    public Servo rotateServoOne;//black box
-    //public Servo rotateServoTwo;//black box
-    public Servo depositServo;
+    //Servo Count -- 2 / 12 (8 left)
+    public Servo rotateServo;//black box
     public CRServo vacuumServo;//collection mechanism
 
     public ModernRoboticsI2cGyro gyro;
@@ -58,16 +56,13 @@ public class DepotAutonomous extends LinearOpMode {
         liftMotor = hardwareMap.dcMotor.get("liftMotor");
         extendMotor = hardwareMap.dcMotor.get("extendMotor");
         linearactuatorMotor = hardwareMap.dcMotor.get("linearactuatorMotor");
-        rotateServoOne = hardwareMap.servo.get("rotateServoOne");
-        depositServo = hardwareMap.servo.get("depositServo");
-        //rotateServoTwo = hardwareMap.servo.get("rotateServoTwo");
+        rotateServo = hardwareMap.servo.get("rotateServo");
         vacuumServo = hardwareMap.crservo.get("vacuumServo");
         leftMotorBack.setDirection(DcMotor.Direction.FORWARD);
         leftMotorFront.setDirection(DcMotor.Direction.FORWARD);
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
         linearactuatorMotor.setDirection(DcMotor.Direction.FORWARD);
-        extendMotor.setDirection(DcMotor.Direction.FORWARD);
         liftMotor.setDirection(DcMotor.Direction.REVERSE);
         gyro = (ModernRoboticsI2cGyro) hardwareMap.get("gyro");
 
@@ -135,66 +130,139 @@ public class DepotAutonomous extends LinearOpMode {
                 detector.disable();
                 StopDriving();
                 move(linearactuatorMotor,DRIVE_SPEED,value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 3, 0);
-                gyroTurn(TURN_SPEED, 90);
-                gyroHold(TURN_SPEED,90,1);
-                gyroDrive(DRIVE_SPEED, 10, 90);
-                //score();
-                gyroDrive(DRIVE_SPEED, 60, 90);
-                depositServo.setPosition(Servo.MAX_POSITION);
-                gyroTurn(TURN_SPEED, 41);
-                gyroHold(TURN_SPEED, 41, 0.5);
-                gyroDrive(DRIVE_SPEED, -80, 41);
-
+                gyroTurn(TURN_SPEED,14);
+                gyroDrive(DRIVE_SPEED, 5, 14);
+                gyroTurn(TURN_SPEED,30);
+                gyroDrive(DRIVE_SPEED, 5, 30);
+                gyroTurn(TURN_SPEED, 89);
+                gyroHold(TURN_SPEED,89,1);
+                gyroDrive(DRIVE_SPEED, 10, 89);
+                move(extendMotor,DRIVE_SPEED,3000);
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                sleep(1000);
+                vacuumServo.setPower(-1.0);
+                sleep(500);
+                vacuumServo.setPower(1.0);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                move(extendMotor,1,(int)(1770*encoder));
+                sleep(1000);
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                sleep(2000);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                move(extendMotor,1,(int)(25*encoder));
+                sleep(500);
+                rotateServo.setPosition(Servo.MIN_POSITION);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                gyroTurn(TURN_SPEED,80);
+                gyroDrive(DRIVE_SPEED, -10, 80);
+                move(extendMotor,1,(int)(2000*encoder));
+                move(liftMotor,0.3, -680);
+                sleep(1000);
+                move(liftMotor,0.3, 0);
+                gyroDrive(DRIVE_SPEED, 12, 90);
+                gyroTurn(TURN_SPEED,165);
+                gyroHold(TURN_SPEED,165,0.5);
+                gyroDrive(DRIVE_SPEED, 40, 165);
+                gyroDrive(DRIVE_SPEED, 35, 193);
             }
 
             //Right
             else if (detector.getXPosition() > 420){
-
                 detector.disable();
                 StopDriving();
                 move(linearactuatorMotor,DRIVE_SPEED,value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 3.5, 0);
-                gyroTurn(TURN_SPEED, 55);
-                gyroHold(TURN_SPEED, 55, 0.5);
-                gyroDrive(DRIVE_SPEED, 10, 55);
-                //score();
-                gyroDrive(DRIVE_SPEED, 40, 55);
-                gyroTurn(TURN_SPEED, 130);
-                gyroHold(TURN_SPEED, 130, 0.5);
-                gyroDrive(DRIVE_SPEED, 40, 130);
-                gyroTurn(TURN_SPEED,41);
-                gyroHold(TURN_SPEED,41,0.5);
-                depositServo.setPosition(Servo.MAX_POSITION);
+                gyroTurn(TURN_SPEED,14);
+                gyroDrive(DRIVE_SPEED, 5, 14);
+                gyroTurn(TURN_SPEED,30);
+                gyroDrive(DRIVE_SPEED, 5, 30);
+                gyroTurn(TURN_SPEED, 90);
+                gyroHold(TURN_SPEED,90,1);
+                gyroDrive(DRIVE_SPEED, 10, 90);
+                move(extendMotor,DRIVE_SPEED,(int)(6000*encoder));
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                sleep(1000);
+                vacuumServo.setPower(-1.0);
                 sleep(500);
-                gyroDrive(DRIVE_SPEED, -80, 41);
+                vacuumServo.setPower(1.0);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                move(extendMotor,1,(int)(2130*encoder));
+                sleep(1000);
+                gyroTurn(TURN_SPEED, 52);
+                gyroHold(TURN_SPEED,52,0.5);
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                sleep(2000);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                move(extendMotor,1,(int)(25*encoder));
+                sleep(500);
+                rotateServo.setPosition(Servo.MIN_POSITION);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                gyroTurn(TURN_SPEED,80);
+                gyroDrive(DRIVE_SPEED, -12, 80);
+                move(extendMotor,1,(int)(2000*encoder));
+                move(liftMotor,0.3, -680);
+                sleep(1000);
+                move(liftMotor,0.3, 0);
+                gyroDrive(DRIVE_SPEED, 12, 90);
+                gyroTurn(TURN_SPEED,165);
+                gyroHold(TURN_SPEED,165,0.5);
+                gyroDrive(DRIVE_SPEED, 40, 165);
+                gyroDrive(DRIVE_SPEED, 35, 193);
 
             }
 
             //Left
             else if (detector.getXPosition() < 180) {
-
                 detector.disable();
                 StopDriving();
                 move(linearactuatorMotor,DRIVE_SPEED,value);
-                gyroTurn(TURN_SPEED,0);
-                gyroHold(TURN_SPEED,0,0.5);
-                gyroDrive(DRIVE_SPEED, 3.5, 0);
-                gyroTurn(TURN_SPEED, 115);
-                gyroHold(TURN_SPEED, 115, 0.5);
-                gyroDrive(DRIVE_SPEED, 10, 115);
-                //score();
-                gyroDrive(DRIVE_SPEED, 43, 115);
-                gyroTurn(TURN_SPEED, 45);
-                gyroHold(TURN_SPEED, 45, 0.5);
-                gyroDrive(DRIVE_SPEED, 15, 45);
-                depositServo.setPosition(Servo.MAX_POSITION);
+                gyroTurn(TURN_SPEED,14);
+                gyroDrive(DRIVE_SPEED, 5, 14);
+                gyroTurn(TURN_SPEED,30);
+                gyroDrive(DRIVE_SPEED, 5, 30);
+                gyroTurn(TURN_SPEED, 90);
+                gyroHold(TURN_SPEED,90,1);
+                gyroDrive(DRIVE_SPEED, 10, 90);
+                move(extendMotor,DRIVE_SPEED,(int)(6000*encoder));
+                rotateServo.setPosition(Servo.MAX_POSITION);
                 sleep(1000);
-                gyroDrive(DRIVE_SPEED, -65, 41);
+                vacuumServo.setPower(-1.0);
+                sleep(500);
+                vacuumServo.setPower(1.0);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                move(extendMotor,DRIVE_SPEED,(int)(3060*encoder));
+                sleep(1000);
+                gyroTurn(TURN_SPEED, 123);
+                gyroHold(TURN_SPEED,123,0.5);
+                rotateServo.setPosition(Servo.MAX_POSITION);
+                sleep(2000);
+                rotateServo.setPosition(0.5);
+                sleep(500);
+                move(extendMotor,1,(int)(25*encoder));
+                sleep(500);
+                rotateServo.setPosition(Servo.MIN_POSITION);
+                sleep(500);
+                rotateServo.setPosition(0.5);
+                gyroTurn(TURN_SPEED,80);
+                gyroDrive(DRIVE_SPEED, -12, 80);
+                move(extendMotor,1,(int)(2000*encoder));
+                move(liftMotor,0.3, -680);
+                sleep(1000);
+                move(liftMotor,0.3, 0);
+                gyroDrive(DRIVE_SPEED, 12, 80);
+                gyroTurn(TURN_SPEED,160);
+                gyroHold(TURN_SPEED,160,0.5);
+                gyroDrive(DRIVE_SPEED, 40, 160);
+                gyroDrive(DRIVE_SPEED, 35, 193);
             }
 
             telemetry.addData("Path", "Complete");
@@ -205,34 +273,13 @@ public class DepotAutonomous extends LinearOpMode {
 
     }
 
-    public void score(){
-        move(extendMotor,0.5,-500);
-        vacuumServo.setPower(1);
-        rotateServoOne.setPosition(Servo.MAX_POSITION);
-        //rotateServoTwo.setPosition(Servo.MIN_POSITION);
-        sleep(2000);
-        move(extendMotor,0.5,500);
-        //rotateServoTwo.setPosition(Servo.MAX_POSITION);
-        rotateServoOne.setPosition(Servo.MIN_POSITION);
-        move(liftMotor,DRIVE_SPEED, 3000);
-        sleep(1000);
-        move(liftMotor,DRIVE_SPEED, 0);
-    }
-
-    public void move (DcMotor motor, double power, int distance)
+    public void move(DcMotor motor, double power, int position)
     {
-        int moveNumber;
-        int move;
-
         // Ensure that the opmode is still active
         if (opModeIsActive())
         {
-            // Determine new target position, and pass to motor controller
-            moveNumber = (int)(distance);
-            move = motor.getCurrentPosition() + moveNumber;
-
             // Set Target and Turn On RUN_TO_POSITION
-            motor.setTargetPosition(move);
+            motor.setTargetPosition(position);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion

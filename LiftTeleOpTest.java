@@ -1,4 +1,5 @@
 /*
+
 package org.firstinspires.ftc.teamcode;
 
 import  com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,39 +9,37 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-*/
-/**
- * Created by Manjesh on 12/4/2018.
- *//*
-
-
 @TeleOp(name = "Test Tele-Op")
+
 public class LiftTeleOpTest extends LinearOpMode
 {
-    //Motor Count -- 7 / 8
-    public DcMotor liftMotor;
+    public DcMotor extendMotor;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-        liftMotor = hardwareMap.dcMotor.get("liftMotor");
+        extendMotor = hardwareMap.dcMotor.get("extendMotor");
+        extendMotor.setDirection(DcMotor.Direction.FORWARD);
+        extendMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         waitForStart();
         while (opModeIsActive())
         {
-            double lift;
+            double arm_out;
 
             //Gamepad 2 Portion
             //-------------------------------------------------------------------------
 
-            lift = gamepad2.right_stick_y;
+            arm_out = gamepad2.left_stick_y;
 
-            lift = Range.clip(lift, -1, 1);
+            arm_out = Range.clip(arm_out, -1,1);
 
-            lift = (float) scaleInput(lift);
+            arm_out = (float) scaleInput(arm_out);
+            extendMotor.setPower(arm_out);
 
-            liftMotor.setPower(lift);
-
+            telemetry.addData("Current Value", extendMotor.getCurrentPosition());
+            telemetry.update();
             idle();
         }
     }
@@ -64,4 +63,6 @@ public class LiftTeleOpTest extends LinearOpMode
         }
         return dScale;
     }
-}*/
+}
+
+*/

@@ -15,7 +15,9 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "Tele-Op")
 public class Teleop extends LinearOpMode
 {
-    //Motor Count -- 8 / 8 (Max Usage)
+    final double encoder = 0.512878385554965;
+
+    //Motor Count -- 7 / 8
     public DcMotor rightMotorFront;
     public DcMotor leftMotorFront;
     public DcMotor rightMotorBack;
@@ -24,10 +26,8 @@ public class Teleop extends LinearOpMode
     public DcMotor extendMotor;
     public DcMotor linearactuatorMotor;
 
-    //Servo Count -- 4 / 12 (8 left)
-    public Servo rotateServoOne;//black box
-    //public Servo rotateServoTwo;//black box
-    public Servo depositServo;
+    //Servo Count -- 2 / 12 (10 left)
+    public Servo rotateServo;//black box
     public CRServo vacuumServo;//collection mechanism
 
     @Override
@@ -40,16 +40,13 @@ public class Teleop extends LinearOpMode
         liftMotor = hardwareMap.dcMotor.get("liftMotor");
         extendMotor = hardwareMap.dcMotor.get("extendMotor");
         linearactuatorMotor = hardwareMap.dcMotor.get("linearactuatorMotor");
-        rotateServoOne = hardwareMap.servo.get("rotateServoOne");
-        depositServo = hardwareMap.servo.get("depositServo");
-        //rotateServoTwo = hardwareMap.servo.get("rotateServoTwo");
+        rotateServo = hardwareMap.servo.get("rotateServo");
         vacuumServo = hardwareMap.crservo.get("vacuumServo");
         leftMotorBack.setDirection(DcMotor.Direction.FORWARD);
         leftMotorFront.setDirection(DcMotor.Direction.FORWARD);
         rightMotorFront.setDirection(DcMotor.Direction.REVERSE);
         rightMotorBack.setDirection(DcMotor.Direction.REVERSE);
         linearactuatorMotor.setDirection(DcMotor.Direction.FORWARD);
-        extendMotor.setDirection(DcMotor.Direction.FORWARD);
         liftMotor.setDirection(DcMotor.Direction.REVERSE);
 
 
@@ -69,8 +66,9 @@ public class Teleop extends LinearOpMode
             double drive;   // Power for forward and back motion
             double strafe;  // Power for left and right motion
             double rotate;  // Power for rotating the robot
-            double GoUPandDOWN;
+            double GoUPandDOWN = 0;
             double arm_out;
+            double ticks_out;
             double arm_up;
 
             //Gamepad 1 Portion
@@ -104,14 +102,18 @@ public class Teleop extends LinearOpMode
                 leftMotorBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
+            if(gamepad1.x){
+                extendMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                extendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+
             //Set the power for the wheels
             leftMotorBack.setPower(drive - strafe + rotate);
             leftMotorFront.setPower(drive + strafe + rotate);
             rightMotorBack.setPower(drive + strafe - rotate);
             rightMotorFront.setPower(drive - strafe - rotate);
-
-            //Linear Actuator Control (Motor)
-            GoUPandDOWN = gamepad2.left_trigger;
 
             if (gamepad1.right_bumper)
             {
@@ -129,7 +131,7 @@ public class Teleop extends LinearOpMode
             //-------------------------------------------------------------------------
 
             //Linear Slide Up Control (Motor)
-            arm_up = gamepad2.right_stick_y;
+            arm_up = gamepad2.left_stick_y;
 
             arm_up = Range.clip(arm_up, -0.5,0.5);
 
@@ -138,12 +140,14 @@ public class Teleop extends LinearOpMode
             liftMotor.setPower(arm_up);
 
             //Linear Slide Out Control (Motor)
-            arm_out = gamepad2.left_stick_y;
+            arm_out = gamepad2.right_stick_y;
 
             arm_out = Range.clip(arm_out, -1,1);
 
             arm_out = (float) scaleInput(arm_out);
+
             extendMotor.setPower(arm_out);
+
 
             //Vacuum Control (Servo)
             if (gamepad2.a)
@@ -164,59 +168,55 @@ public class Teleop extends LinearOpMode
             //Arm Rotate Control (Servo)
             if (gamepad2.dpad_down)
             {
-                rotateServoOne.setPosition(Servo.MAX_POSITION);
-                //rotateServoTwo.setPosition(Servo.MIN_POSITION);
+                rotateServo.setPosition(Servo.MAX_POSITION);
             }
 
             if (gamepad2.dpad_up)
             {
-                //rotateServoTwo.setPosition(Servo.MAX_POSITION);
-                rotateServoOne.setPosition(Servo.MIN_POSITION);
+                rotateServo.setPosition(Servo.MIN_POSITION);
             }
 
             if (gamepad2.right_bumper)
             {
-                //rotateServoTwo.setPosition(0.5);
-                rotateServoOne.setPosition(0.5);
+                rotateServo.setPosition(0.5);
             }
 
-
             if (gamepad2.right_trigger > 0.25){
-                while (!gamepad2.y){
-                    move(extendMotor,0.5,0);
-                    rotateServoOne.setPosition(Servo.MAX_POSITION);
-                    //rotateServoTwo.setPosition(Servo.MIN_POSITION);
+                rotateServo.setPosition(0.5);
+                if(extendMotor.getCurrentPosition() < 25){
+                    moveNegative(extendMotor,1,(int)(25*encoder));
+                } else {
+                    movePositive(extendMotor,1,(int)(25*encoder));
                 }
+                rotateServo.setPosition(Servo.MIN_POSITION);
+                sleep(1000);
+                rotateServo.setPosition(0.5);
+                extendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
             if (gamepad2.left_trigger > 0.25){
-                while (!gamepad2.y){
-                    move(liftMotor,1, 3000);
-                    sleep(1000);
-                    move(liftMotor,1, 0);
-                }
+                moveNegative(extendMotor,1,(int)(2000*encoder));
+                moveNegative(liftMotor,0.3, -680);
+                sleep(1000);
+                moveNegative(liftMotor,0.3, 0);
+                extendMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
+
 
             //Fail safe actions
             //-------------------------------------------------------------------------
-            depositServo.setPosition(Servo.MIN_POSITION);
+            //depositServo.setPosition(Servo.MIN_POSITION);
         }
     }
 
-    public void move (DcMotor motor, double power, int distance)
+    public void moveNegative (DcMotor motor, double power, int position)
     {
-        int moveNumber;
-        int move;
-
         // Ensure that the opmode is still active
         if (opModeIsActive())
         {
-            // Determine new target position, and pass to motor controller
-//            moveNumber = (int)(distance);
-//            move = motor.getCurrentPosition() + moveNumber;
-
             // Set Target and Turn On RUN_TO_POSITION
-            motor.setTargetPosition(distance);
+            motor.setTargetPosition(position);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // start motion
@@ -231,6 +231,29 @@ public class Teleop extends LinearOpMode
             }
         }
     }
+
+    public void movePositive (DcMotor motor, double power, int position)
+    {
+        // Ensure that the opmode is still active
+        if (opModeIsActive())
+        {
+            // Set Target and Turn On RUN_TO_POSITION
+            motor.setTargetPosition(position);
+            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // start motion
+            power = Range.clip(Math.abs(power), 0.0, 1.0);
+            motor.setPower(power);
+
+            while (opModeIsActive() && motor.getCurrentPosition() > motor.getTargetPosition()) {
+                telemetry.addData("Current Value", motor.getCurrentPosition());
+                telemetry.addData("Target Value", motor.getTargetPosition());
+                telemetry.update();
+                idle();
+            }
+        }
+    }
+
 
     double scaleInput(double dVal)
     {
